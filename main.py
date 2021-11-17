@@ -60,14 +60,16 @@ try:
         windowsize_i = int(320)
         windowsize_j = int(240)
         image2 = np.zeros(shape=[windowsize_j, windowsize_i])
-        for i in range(220, windowsize_i):
-            for j in range(140, windowsize_j):
-                if depth_image[j,i] > int(distance):
+        for i in range(0, windowsize_i):
+            for j in range(0, windowsize_j):
+                if depth_image[j,i] > int(distance) + 100:
                     #depth_image[j,i] = 0
                     image2[j,i] = 100
                 else:
                     image2[j,i] = depth_image[j,i]
+                print(i, distance)
                 cv2.imwrite('Hopeless.jpg', image2)
+
 
         # If depth and color resolutions are different, resize color image to match depth image for display
         if depth_colormap_dim != color_colormap_dim:
