@@ -1,6 +1,7 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
+import time
 
 # Configure depth and color streams
 pipeline = rs.pipeline()
@@ -60,14 +61,16 @@ try:
         windowsize_i = int(320)
         windowsize_j = int(240)
         image2 = np.zeros(shape=[windowsize_j, windowsize_i])
+
+        time.sleep(5)
         for i in range(0, windowsize_i):
+            print(i, distance)
             for j in range(0, windowsize_j):
                 if depth_image[j,i] > int(distance) + 100:
                     #depth_image[j,i] = 0
                     image2[j,i] = 100
                 else:
                     image2[j,i] = depth_image[j,i]
-                print(i, distance)
                 cv2.imwrite('Hopeless.jpg', image2)
 
 
