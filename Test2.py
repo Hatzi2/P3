@@ -6,8 +6,8 @@ def colorMask(img): #colorMask is created for highlighting specific colors in th
     #Greenscreen grøn RGB values = 4, 244, 4
 
     hsvImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) #Change default BGR colors to HSV
-    lowerThresh = np.array([0, 48, 80], dtype = "uint8") #Lower range of color
-    upperThresh = np.array([20, 255, 255], dtype = "uint8") #Upper range of color
+    lowerThresh = np.array([55, 50, 80], dtype = "uint8") #Lower range of color
+    upperThresh = np.array([70, 255, 255], dtype = "uint8") #Upper range of color
     colorRegionHSV = cv2.inRange(hsvImg, lowerThresh, upperThresh) #Detect color on range of lower and upper pixel values in the colorspace
     blurred = cv2.blur(colorRegionHSV, (2,2)) #Blur image to improve masking
 

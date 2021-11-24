@@ -3,8 +3,10 @@ import cv2 as cv
 
 def skinmask(img):
     hsvim = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    lower = np.array([0, 48, 80], dtype = "uint8")
-    upper = np.array([20, 255, 255], dtype = "uint8")
+    #lower = np.array([0, 48, 80], dtype = "uint8")
+    #upper = np.array([20, 255, 255], dtype = "uint8")
+    lower = np.array([55, 50, 80], dtype = "uint8")
+    upper = np.array([70, 255, 255], dtype = "uint8")
     skinRegionHSV = cv.inRange(hsvim, lower, upper)
     blurred = cv.blur(skinRegionHSV, (2,2))
     ret, thresh = cv.threshold(blurred,0,255,cv.THRESH_BINARY)
