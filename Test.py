@@ -37,31 +37,27 @@ def getDefects(contours):
     return defects
 
 video = cv2.VideoCapture(2) # '0' for webcam
-fgbg = cv2.createBackgroundSubtractorMOG2()
+"""fgbg = cv2.createBackgroundSubtractorMOG2()
 
-count = 0
+ret, frame = video.read()
+
+fgmask = fgbg.apply(frame)"""
+
 while video.isOpened():
     _, img = video.read()
-    ret, frame = video.read()
 
-    if count == 0:
-        time.sleep(2)
-        fgmask = fgbg.apply(img)
-        count += 1
+    try:
+        mask_img = colorMask(img)
+        contours, hull = getContour(mask_img)
+        cv2.drawContours(img, [contours], -1, (255,255,0), 2) #Make a cyan contour
+        cv2.drawContours(img, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
+        defects = getDefects(contours)
 
-    if count > 0:
-        try:
-            mask_img = colorMask(img)
-            contours, hull = getContour(mask_img)
-            cv2.drawContours(fgmask, [contours], -1, (255,255,0), 2) #Make a cyan contour
-            cv2.drawContours(fgmask, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
-            defects = getDefects(contours)
+        #Her skal der være noget cosinus relation matematik magic for at detect specific gesture
+        #Brug defects og contour + noget andet cosinus BS YEP
 
-            #Her skal der være noget cosinus relation matematik magic for at detect specific gesture
-            #Brug defects og contour + noget andet cosinus BS YEP
-
-        except:
-            pass
+    except:
+        pass
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 

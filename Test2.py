@@ -35,7 +35,7 @@ def getDefects(contours):
     defects = cv2.convexityDefects(contours, hull)
     return defects
 
-video = cv2.VideoCapture(2) # '0' for webcam
+video = cv2.VideoCapture(0) # '0' for webcam
 
 while video.isOpened():
     _, img = video.read()
