@@ -12,15 +12,6 @@ def colorMask(img): #colorMask is created for highlighting specific colors in th
     colorRegionHSV = cv2.inRange(hsvImg, lowerThresh, upperThresh) #Detect color on range of lower and upper pixel values in the colorspace
     blurred = cv2.blur(colorRegionHSV, (2,2)) #Blur image to improve masking
 
-    #Prøvede rgb fremfor hsv men så tager den bare et billede?
-    #Prøv at lave lower og upper boundary ligesom i det her eksempel https://cvexplained.wordpress.com/2020/04/28/color-detection-hsv/
-
-    #rgbImg = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #Change default BGR to RGB
-    #lowerThresh = np.array([0, 0, 0], dtype = "uint8") #Lower range of color
-    #upperThresh = np.array([4, 244, 4], dtype = "uint8") #Upper range of color
-    #colorRegionRGB = cv2.inRange(rgbImg, lowerThresh, upperThresh) #Detect color on range of lower and upper pixel values in the colorspace
-    #blurred = cv2.blur(colorRegionRGB, (2,2)) #Blur image to improve masking
-
     ret, thresh = cv2.threshold(blurred,0,255,cv2.THRESH_BINARY) #Apply threshing
     return thresh
 
@@ -36,15 +27,14 @@ def getDefects(contours):
     defects = cv2.convexityDefects(contours, hull)
     return defects
 
-video = cv2.VideoCapture(2) # '0' for webcam
-"""fgbg = cv2.createBackgroundSubtractorMOG2()
-
-ret, frame = video.read()
-
-fgmask = fgbg.apply(frame)"""
+video = cv2.VideoCapture(0) # '0' for webcam
+fgbg = cv2.createBackgroundSubtractorMOG2()
 
 while video.isOpened():
     _, img = video.read()
+    ret, frame = video.read()
+
+    fgmask = fgbg.apply(frame)
 
     try:
         mask_img = colorMask(img)
@@ -63,6 +53,7 @@ while video.isOpened():
 
     cv2.imshow("img", img)
     cv2.imshow("blur", mask_img)
+    cv2.imshow("frame", fgmask)
 
 video.release()
 cv2.destroyAllWindows()

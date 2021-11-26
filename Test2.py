@@ -1,11 +1,12 @@
 import numpy as np
 import cv2
+import math
 
-def colorMask(img): #colorMask is created for highlighting specific colors in the image
+def colorMask(frame): #colorMask is created for highlighting specific colors in the image
     #Greenscreen grøn HSV/HSB values = 120°, 98%, 96%
     #Greenscreen grøn RGB values = 4, 244, 4
 
-    hsvImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) #Change default BGR colors to HSV
+    hsvImg = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) #Change default BGR colors to HSV
     lowerThresh = np.array([0, 48, 80], dtype = "uint8") #Lower range of color
     upperThresh = np.array([20, 255, 255], dtype = "uint8") #Upper range of color
     colorRegionHSV = cv2.inRange(hsvImg, lowerThresh, upperThresh) #Detect color on range of lower and upper pixel values in the colorspace
@@ -38,19 +39,19 @@ def getDefects(contours):
 video = cv2.VideoCapture(0) # '0' for webcam
 
 while video.isOpened():
-    _, img = video.read()
+    _, frame = video.read()
 
     try:
-        mask_img = colorMask(img)
+        mask_img = colorMask(frame)
         contours, hull = getContour(mask_img)
-        cv2.drawContours(img, [contours], -1, (255,255,0), 2) #Make a cyan contour
-        cv2.drawContours(img, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
+        cv2.drawContours(frame, [contours], -1, (255,255,0), 2) #Make a cyan contour
+        cv2.drawContours(frame, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
         defects = getDefects(contours)
 
         #Her skal der være noget cosinus relation matematik magic for at detect specific gesture
         #Brug defects og contour + noget andet cosinus BS YEP
 
-        cv2.imshow("img", img)
+        cv2.imshow("frame", frame)
     except:
         pass
     if cv2.waitKey(1) & 0xFF == ord('q'):
