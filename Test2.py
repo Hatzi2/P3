@@ -1,8 +1,6 @@
 import numpy as np
 import cv2
 import math
-import time
-import threading
 from datetime import datetime, timedelta
 
 def colorMask(frame): #colorMask is created for highlighting specific colors in the image
