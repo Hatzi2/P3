@@ -29,7 +29,7 @@ def getDefects(contours):
     return defects
 
 video = cv2.VideoCapture(0) # '0' for webcam
-kernel = np.ones((5,5),np.uint8)
+kernel = np.ones((8,8),np.uint8)
 
 period = timedelta(seconds = 1)
 next_time = datetime.now() + period
