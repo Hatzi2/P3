@@ -3,6 +3,7 @@ import cv2
 import math
 import time
 import threading
+from datetime import datetime, timedelta
 
 def colorMask(frame): #colorMask is created for highlighting specific colors in the image
     #Greenscreen grøn HSV/HSB values = 120°, 98%, 96%
@@ -32,13 +33,16 @@ def getDefects(contours):
 video = cv2.VideoCapture(0) # '0' for webcam
 kernel = np.ones((5,5),np.uint8)
 
+period = timedelta(seconds = 1)
+next_time = datetime.now() + period
+seconds = 0
+count = 0
 
 while video.isOpened():
     _, frame = video.read()
     #frame = cv2.flip(frame, 1)
     cv2.rectangle(frame, (50, 100), (250, 350), (255, 0, 0), 0)
     crop_image = frame[100:350, 50:250]
-
 
     try:
         mask_img = colorMask(frame)
@@ -47,8 +51,6 @@ while video.isOpened():
         cv2.drawContours(frame, [contours], -1, (255,255,0), 2) #Make a cyan contour
         cv2.drawContours(frame, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
         defects = getDefects(contours)
-
-
 
         #Her skal der være noget cosinus relation matematik magic for at detect specific gesture
         #Brug defects og contour + noget andet cosinus BS YEP
@@ -70,9 +72,48 @@ while video.isOpened():
                 cnt = cnt+1
             cv2.putText(frame, str(cnt), (0, 50), cv2.FONT_HERSHEY_SIMPLEX,1, (255, 0, 0) , 2, cv2.LINE_AA)
 
+            while next_time < datetime.now():
+                seconds += 1
+                next_time += period
+                print(seconds)
+
+                if count != cnt:
+                    count = cnt
+                    seconds = 0
+
+                if count == 0:
+                    if seconds == 2:
+                        print("0 fingre")
+                        seconds = 0
+
+                if count == 1:
+                    if seconds == 2:
+                        print("1 finger")
+                        seconds = 0
+
+                if count == 2:
+                    if seconds == 2:
+                        print("2 fingre")
+                        seconds = 0
+
+                if count == 3:
+                    if seconds == 2:
+                        print("3 fingre")
+                        seconds = 0
+
+                if count == 4:
+                    if seconds == 2:
+                        print("4 fingre")
+                        seconds = 0
+
+                if count == 5:
+                    if seconds == 2:
+                        print("5 fingre")
+                        seconds = 0
+
         cv2.imshow("frame", frame)
-        cv2.imshow("mask", mask_img)
-        cv2.imshow("frame2", imageD)
+        #cv2.imshow("mask", mask_img)
+        #cv2.imshow("frame2", imageD)
     except:
         pass
     if cv2.waitKey(1) & 0xFF == ord('q'):
