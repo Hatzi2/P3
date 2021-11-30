@@ -1,13 +1,15 @@
 import numpy as np
 import cv2
 import math
+import time
+import threading
 
 def colorMask(frame): #colorMask is created for highlighting specific colors in the image
     #Greenscreen grøn HSV/HSB values = 120°, 98%, 96%
     #Greenscreen grøn RGB values = 4, 244, 4
 
     hsvImg = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) #Change default BGR colors to HSV
-    lowerThresh = np.array([0, 48, 80], dtype = "uint8") #Lower range of color
+    lowerThresh = np.array([0, 48, 80], dtype = "uint8") #Lower range of color,
     upperThresh = np.array([20, 255, 255], dtype = "uint8") #Upper range of color
     colorRegionHSV = cv2.inRange(hsvImg, lowerThresh, upperThresh) #Detect color on range of lower and upper pixel values in the colorspace
     blurred = cv2.blur(colorRegionHSV, (2,2)) #Blur image to improve masking
@@ -28,6 +30,8 @@ def getDefects(contours):
     return defects
 
 video = cv2.VideoCapture(0) # '0' for webcam
+kernel = np.ones((5,5),np.uint8)
+
 
 while video.isOpened():
     _, frame = video.read()
@@ -35,12 +39,16 @@ while video.isOpened():
     cv2.rectangle(frame, (50, 100), (250, 350), (255, 0, 0), 0)
     crop_image = frame[100:350, 50:250]
 
+
     try:
-        mask_img = colorMask(crop_image)
-        contours, hull = getContour(mask_img)
-        cv2.drawContours(crop_image, [contours], -1, (255,255,0), 2) #Make a cyan contour
-        cv2.drawContours(crop_image, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
+        mask_img = colorMask(frame)
+        imageD = cv2.dilate(mask_img, kernel, iterations=1)
+        contours, hull = getContour(imageD)
+        cv2.drawContours(frame, [contours], -1, (255,255,0), 2) #Make a cyan contour
+        cv2.drawContours(frame, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
         defects = getDefects(contours)
+
+
 
         #Her skal der være noget cosinus relation matematik magic for at detect specific gesture
         #Brug defects og contour + noget andet cosinus BS YEP
@@ -64,7 +72,7 @@ while video.isOpened():
 
         cv2.imshow("frame", frame)
         cv2.imshow("mask", mask_img)
-        cv2.imshow("frame2", crop_image)
+        cv2.imshow("frame2", imageD)
     except:
         pass
     if cv2.waitKey(1) & 0xFF == ord('q'):
