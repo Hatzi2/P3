@@ -45,7 +45,8 @@ while video.isOpened():
     try:
         mask_img = colorMask(frame)
         imageD = cv2.dilate(mask_img, kernel, iterations=1)
-        contours, hull = getContour(imageD)
+        imageE = cv2.erode(imageD, kernel, iterations=1)
+        contours, hull = getContour(imageE)
         cv2.drawContours(frame, [contours], -1, (255,255,0), 2) #Make a cyan contour
         cv2.drawContours(frame, [hull], -1, (0, 255, 255), 2) #Make a yellow convex hull
         defects = getDefects(contours)
@@ -110,8 +111,8 @@ while video.isOpened():
                         seconds = 0
 
         cv2.imshow("frame", frame)
-        #cv2.imshow("mask", mask_img)
-        #cv2.imshow("frame2", imageD)
+        cv2.imshow("mask", mask_img)
+        cv2.imshow("frame2", imageE)
     except:
         pass
     if cv2.waitKey(1) & 0xFF == ord('q'):
